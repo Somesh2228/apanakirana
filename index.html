@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apna Kirana - Online Grocery Store</title>
+    <!-- Tailwind CSS for Layout -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <style>
+        /* === FROM STYLE.CSS === */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Custom styles for animations and specific elements */
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .pop-in {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0%   { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        /* Hide scrollbar */
+        .hide-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .hide-scroll {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Input Group Styles */
+        .input-group-text {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background-color: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-right: none;
+            border-radius: 0.5rem 0 0 0.5rem;
+            color: #4b5563;
+            font-weight: 500;
+        }
+
+        .category-card-shadow:hover {
+            box-shadow: 0 10px 25px -5px rgba(22, 163, 74, 0.3);
+        }
+
+        #hero-slider {
+            transition: background-image 1s ease-in-out;
+        }
+        
+        /* Map Animation Styles */
+        .map-container {
+            background-color: #e5e7eb;
+            background-image: 
+                linear-gradient(white 2px, transparent 2px),
+                linear-gradient(90deg, white 2px, transparent 2px);
+            background-size: 40px 40px;
+        }
+        
+        @keyframes bikeMove {
+            0% { left: 10%; top: 10%; }
+            25% { left: 40%; top: 10%; transform: rotate(0deg); }
+            30% { left: 45%; top: 15%; transform: rotate(90deg); }
+            50% { left: 45%; top: 60%; transform: rotate(90deg); }
+            55% { left: 50%; top: 65%; transform: rotate(0deg); }
+            100% { left: 80%; top: 65%; }
+        }
+
+        .bike-animation {
+            animation: bikeMove 10s linear infinite;
+            position: absolute;
+            transition: all 0.5s;
+        }
+    </style>
+</head>
+<body class="relative bg-gray-50 text-gray-900 font-sans pb-16">
+
+    <!-- HEADER -->
+    <header class="sticky top-0 z-50 bg-white shadow-md">
+        <!-- Top Strip -->
+        <div class="bg-green-50 hidden md:flex justify-between px-4 lg:px-12 py-1 text-xs text-gray-600 border-b border-green-100">
+            <span class="flex items-center"><i data-lucide="smartphone" class="w-3 h-3 mr-1"></i> Download App</span>
+            <span>Customer Support: 1800-123-4567</span>
+        </div>
+
+        <!-- Main Header -->
+        <div class="container mx-auto px-4 lg:px-12 py-3">
+            <div class="flex items-center justify-between gap-4">
+                
+                <!-- Logo -->
+                <a href="#" onclick="renderHome()" class="flex flex-col leading-none cursor-pointer">
+                    <span class="text-2xl font-bold text-green-700 tracking-tight">Apna<span class="text-black">Kirana</span></span>
+                    <span class="text-[10px] text-gray-500 uppercase tracking-wider">Fresh Grocery</span>
+                </a>
+
+                <!-- Location Selector -->
+                <button onclick="toggleModal('location-modal')" class="hidden md:flex items-center text-sm text-gray-600 hover:text-green-700 bg-gray-50 px-2 py-1.5 rounded border border-transparent hover:border-green-200 transition-colors">
+                    <i data-lucide="map-pin" class="w-4 h-4 mr-2 text-green-600"></i>
+                    <span id="current-location" class="max-w-[120px] truncate">Mumbai, 400001</span>
+                    <i data-lucide="chevron-down" class="w-3 h-3 ml-2"></i>
+                </button>
+
+                <!-- Search Bar -->
+                <div class="flex-1 max-w-xl relative hidden sm:block">
+                    <input type="text" id="search-input" placeholder="Search for 'Atta', 'Dal'..." 
+                           class="w-full border border-gray-300 rounded-lg py-2 pl-4 pr-10 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all">
+                    <button class="absolute right-0 top-0 h-full px-3 text-gray-400 hover:text-green-600">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </button>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center gap-4">
+                    <button id="login-btn" onclick="openAuthModal()" class="flex items-center gap-2 text-sm font-medium hover:text-green-600">
+                        <i data-lucide="user" class="w-5 h-5"></i>
+                        <span id="user-name">Login / Sign Up</span>
+                    </button>
+
+                    <button onclick="showCart()" class="relative p-2 bg-green-50 rounded-full hover:bg-green-100 text-green-800 transition-colors">
+                        <i data-lucide="shopping-cart" class="w-6 h-6"></i>
+                        <span id="cart-count" class="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white">0</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Mobile Search -->
+            <div class="mt-3 sm:hidden relative">
+                <input type="text" id="mobile-search-input" placeholder="Search products..." 
+                       class="w-full border border-gray-300 rounded-lg py-2 pl-3 pr-10 text-sm">
+                <i data-lucide="search" class="w-4 h-4 absolute right-3 top-2.5 text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Navigation Categories -->
+        <nav class="border-t border-gray-100 bg-white hidden md:block">
+            <div class="container mx-auto px-12">
+                <ul class="flex gap-8 py-3 text-sm font-medium text-gray-700 overflow-x-auto hide-scroll" id="nav-categories">
+                    <!-- Categories injected by JS -->
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <div id="app-content">
+        <!-- === HOME VIEW === -->
+        <div id="home-view">
+            <!-- Hero Banner -->
+            <section id="hero-slider" class="relative py-10 md:py-16 mb-6 overflow-hidden transition-all duration-1000 ease-in-out bg-gray-900 bg-cover bg-center" style="background-image: url('background.jpg');">
+                <div class="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
+                <div class="container mx-auto px-4 lg:px-12 relative z-10 text-white">
+                    <span class="bg-yellow-400 text-green-900 text-xs font-bold px-2 py-1 rounded uppercase mb-2 inline-block shadow-sm">Free Delivery</span>
+                    <h1 class="text-2xl md:text-4xl font-bold mb-3 leading-tight">Freshness <br/> Delivered Daily</h1>
+                    <p class="mb-4 text-green-100 max-w-lg text-sm md:text-base">Get up to 40% OFF on your daily staples.</p>
+                    <button onclick="scrollToSection('best-deals')" class="bg-green-600 text-white border-2 border-transparent px-5 py-2 rounded-lg font-bold text-sm md:text-base hover:bg-green-700 hover:border-green-500 transition shadow-lg">Shop Best Deals</button>
+                </div>
+            </section>
+
+            <!-- Categories Slider -->
+            <section class="container mx-auto px-4 lg:px-12 mb-6 relative group">
+                <h2 class="text-lg md:text-xl font-bold text-gray-800 mb-3 flex items-center gap-2"><i data-lucide="layout-grid" class="w-5 h-5 text-green-600"></i> Shop by Category</h2>
+                <div class="relative w-full overflow-hidden px-2 py-2">
+                    <button id="slider-prev" onclick="moveSlider(-1)" class="absolute left-0 top-1/2 -translate-y-1/2 z-20 bg-white p-1.5 rounded-full shadow-lg border border-gray-100 text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+                    <button id="slider-next" onclick="moveSlider(1)" class="absolute right-0 top-1/2 -translate-y-1/2 z-20 bg-white p-1.5 rounded-full shadow-lg border border-gray-100 text-gray-600 hover:text-green-600 hover:bg-green-50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+                    <div id="category-track" class="flex transition-transform duration-500 ease-in-out"></div>
+                </div>
+            </section>
+
+            <!-- Best Deals -->
+            <section id="best-deals" class="container mx-auto px-4 lg:px-12 mb-8 bg-white p-4 rounded-xl border border-red-100 shadow-sm">
+                <div class="flex justify-between items-end mb-4">
+                    <div>
+                        <h2 class="text-lg md:text-2xl font-bold text-red-700 flex items-center gap-2"><i data-lucide="percent" class="w-5 h-5 md:w-6 md:h-6"></i> Top Saver Deals</h2>
+                        <p class="text-red-500 text-xs md:text-sm mt-0.5">Huge savings on daily essentials</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6" id="deals-grid"></div>
+            </section>
+        </div>
+
+        <!-- === CATEGORY PAGE VIEW === -->
+        <div id="category-view" class="hidden min-h-screen bg-gray-50 pb-20">
+            <div class="bg-white shadow-sm border-b mb-6">
+                <div class="container mx-auto px-4 lg:px-12 py-6">
+                    <button onclick="renderHome()" class="text-gray-500 hover:text-green-600 flex items-center mb-4 text-sm font-medium transition-colors"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Back to Home</button>
+                    <div class="flex items-center gap-4">
+                         <h1 id="category-page-title" class="text-3xl font-bold text-gray-800">Category Name</h1>
+                         <span id="category-item-count" class="bg-green-100 text-green-800 text-xs font-bold px-2 py-1 rounded-full">0 items</span>
+                    </div>
+                </div>
+            </div>
+            <div class="container mx-auto px-4 lg:px-12">
+                 <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" id="category-page-grid"></div>
+            </div>
+        </div>
+
+        <!-- === CHECKOUT VIEW === -->
+        <div id="checkout-view" class="hidden container mx-auto px-4 lg:px-12 py-8 min-h-screen">
+            <button onclick="renderHome()" class="mb-6 flex items-center text-gray-500 hover:text-green-600"><i data-lucide="arrow-left" class="w-4 h-4 mr-1"></i> Continue Shopping</button>
+            <h2 class="text-2xl font-bold mb-6">Secure Checkout</h2>
+            <form onsubmit="placeOrder(event)" class="flex flex-col lg:flex-row gap-8">
+                <div class="lg:w-2/3 space-y-6">
+                    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="flex items-center mb-4">
+                            <span class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold mr-3">1</span>
+                            <h3 class="text-lg font-bold">Delivery Address</h3>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 ml-11">
+                            <input type="text" id="checkout-name" required placeholder="Name" class="input-field border rounded p-2 w-full focus:ring-green-500 focus:border-green-500">
+                            <div class="flex w-full">
+                                <span class="input-group-text p-2 bg-gray-50 border rounded-l border-r-0">+91</span>
+                                <input type="tel" id="checkout-mobile" required maxlength="10" pattern="[0-9]{10}" placeholder="Mobile Number" class="input-field border rounded-r p-2 w-full border-l-0 focus:ring-green-500 focus:border-green-500 focus:outline-none" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            </div>
+                            <input type="text" id="checkout-address" required placeholder="Flat / House No / Street" class="input-field border rounded p-2 w-full md:col-span-2">
+                            <input type="text" id="checkout-city" required placeholder="City" class="input-field border rounded p-2 w-full">
+                            <input type="text" id="checkout-pincode" required placeholder="Pincode" maxlength="6" pattern="[0-9]{6}" class="input-field border rounded p-2 w-full">
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm">
+                        <div class="flex items-center mb-4">
+                            <span class="w-8 h-8 rounded-full bg-green-100 text-green-700 flex items-center justify-center font-bold mr-3">2</span>
+                            <h3 class="text-lg font-bold">Payment Method</h3>
+                        </div>
+                        <div class="space-y-3 ml-11">
+                            <div class="border rounded-lg overflow-hidden">
+                                <label class="flex items-center p-3 cursor-pointer hover:bg-gray-50 has-[:checked]:bg-green-50">
+                                    <input type="radio" name="payment" value="upi" class="mr-3 text-green-600 focus:ring-green-500" checked onchange="togglePaymentDetails()">
+                                    <div class="flex-1"><span class="block font-medium">UPI (GPay, PhonePe, Paytm)</span></div>
+                                    <i data-lucide="smartphone" class="w-5 h-5 text-gray-400"></i>
+                                </label>
+                                <div id="upi-input-container" class="bg-gray-50 p-3 border-t">
+                                    <input type="text" placeholder="Enter UPI ID (e.g. mobile@upi)" class="w-full border border-gray-300 rounded p-2 text-sm focus:border-green-500 focus:outline-none">
+                                    <p class="text-xs text-gray-500 mt-1">A payment request will be sent to this ID.</p>
+                                </div>
+                            </div>
+                            <div class="border rounded-lg overflow-hidden">
+                                <label class="flex items-center p-3 cursor-pointer hover:bg-gray-50 has-[:checked]:bg-green-50">
+                                    <input type="radio" name="payment" value="cod" class="mr-3 text-green-600 focus:ring-green-500" onchange="togglePaymentDetails()">
+                                    <div class="flex-1"><span class="block font-medium">Cash on Delivery</span></div>
+                                    <i data-lucide="banknote" class="w-5 h-5 text-gray-400"></i>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:w-1/3">
+                    <div class="bg-white p-6 rounded-lg border border-gray-200 shadow-sm sticky top-24">
+                        <h3 class="font-bold text-gray-800 mb-4 pb-2 border-b">Order Summary</h3>
+                        <div id="checkout-items" class="space-y-2 mb-4 max-h-60 overflow-y-auto text-sm"></div>
+                        <div class="border-t pt-4 space-y-2 font-medium text-gray-600">
+                            <div class="flex justify-between"><span>Subtotal</span><span id="checkout-subtotal">₹0</span></div>
+                            <div class="flex justify-between text-green-600"><span>Delivery</span><span>FREE</span></div>
+                            <div class="flex justify-between text-lg font-bold text-gray-900 mt-2"><span>Total</span><span id="checkout-total">₹0</span></div>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg mt-6 font-bold hover:bg-green-700 transition shadow-lg">Place Order</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- === TRACKING VIEW === -->
+        <div id="tracking-view" class="hidden min-h-screen bg-gray-50 pb-20">
+            <!-- Header -->
+            <div class="bg-white shadow-sm border-b sticky top-0 z-30">
+                <div class="container mx-auto px-4 lg:px-12 py-4 flex items-center justify-between">
+                    <button onclick="renderHome()" class="text-gray-500 hover:text-green-600 flex items-center text-sm font-medium transition-colors">
+                        <i data-lucide="arrow-left" class="w-5 h-5 mr-1"></i> Back
+                    </button>
+                    <div class="text-center">
+                        <h1 class="font-bold text-lg text-gray-800">Order Tracking</h1>
+                        <p class="text-xs text-green-600 font-medium" id="tracking-order-id">#00000</p>
+                    </div>
+                    <button class="text-green-600 font-bold text-sm" onclick="alert('Support contacted')">Help</button>
+                </div>
+            </div>
+
+            <div class="container mx-auto px-4 lg:px-12 py-6">
+                <!-- Map Simulation -->
+                <div class="bg-white rounded-xl shadow-lg overflow-hidden mb-6 border border-gray-200 relative">
+                    <div class="h-64 w-full map-container relative">
+                        <!-- Home Icon (Destination) -->
+                        <div class="absolute right-[15%] top-[60%] z-10 flex flex-col items-center">
+                            <div class="bg-red-500 text-white p-2 rounded-full shadow-lg border-2 border-white animate-bounce">
+                                <i data-lucide="home" class="w-5 h-5"></i>
+                            </div>
+                            <span class="bg-white text-[10px] font-bold px-2 py-0.5 rounded shadow mt-1">You</span>
+                        </div>
+                        
+                        <!-- Bike Icon (Moving) -->
+                        <div class="bike-animation z-20 flex flex-col items-center">
+                            <div class="bg-green-600 text-white p-2 rounded-full shadow-lg border-2 border-white">
+                                <i data-lucide="bike" class="w-5 h-5"></i>
+                            </div>
+                            <span class="bg-white text-[10px] font-bold px-2 py-0.5 rounded shadow mt-1 text-green-700">Raju</span>
+                        </div>
+                    </div>
+
+                    <!-- ETA Overlay on Map -->
+                    <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-gray-100 flex justify-between items-center">
+                         <div>
+                             <p class="text-xs text-gray-500 uppercase font-bold">Arriving In</p>
+                             <p class="text-xl font-bold text-gray-800" id="tracking-time-big">-- mins</p>
+                         </div>
+                         <div class="h-10 w-10 bg-green-100 rounded-full flex items-center justify-center text-green-600">
+                             <i data-lucide="clock" class="w-5 h-5"></i>
+                         </div>
+                    </div>
+                </div>
+
+                <!-- Status Timeline -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Order Status</h3>
+                    <div class="relative pl-6 border-l-2 border-gray-200 space-y-8">
+                        <!-- Step 1 -->
+                        <div class="relative">
+                            <div class="absolute -left-[31px] bg-green-500 h-4 w-4 rounded-full border-2 border-white shadow"></div>
+                            <h4 class="font-bold text-sm text-gray-800">Order Placed</h4>
+                            <p class="text-xs text-gray-500" id="time-placed">10:00 AM</p>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="relative">
+                            <div class="absolute -left-[31px] bg-green-500 h-4 w-4 rounded-full border-2 border-white shadow"></div>
+                            <h4 class="font-bold text-sm text-gray-800">Packed & Ready</h4>
+                            <p class="text-xs text-gray-500">Items are packed</p>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="relative">
+                            <div class="absolute -left-[31px] bg-green-500 h-4 w-4 rounded-full border-2 border-white animate-pulse"></div>
+                            <h4 class="font-bold text-sm text-green-600">Out for Delivery</h4>
+                            <p class="text-xs text-gray-500">Raju is on the way</p>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="relative opacity-50">
+                            <div class="absolute -left-[31px] bg-gray-300 h-4 w-4 rounded-full border-2 border-white"></div>
+                            <h4 class="font-bold text-sm text-gray-800">Delivered</h4>
+                            <p class="text-xs text-gray-500">Estimated soon</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Driver Info -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 flex items-center justify-between">
+                     <div class="flex items-center gap-3">
+                         <div class="bg-gray-100 h-12 w-12 rounded-full flex items-center justify-center">
+                             <i data-lucide="user" class="w-6 h-6 text-gray-500"></i>
+                         </div>
+                         <div>
+                             <h4 class="font-bold text-sm">Raju Kumar</h4>
+                             <p class="text-xs text-gray-500">Delivery Partner</p>
+                         </div>
+                     </div>
+                     <button class="bg-green-50 text-green-600 p-2 rounded-full hover:bg-green-100">
+                         <i data-lucide="phone" class="w-5 h-5"></i>
+                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- === POPUPS === -->
+
+    <!-- Active Order Popup (Sticky Bottom) -->
+    <div id="active-order-popup" onclick="openTracking()" class="hidden fixed bottom-4 left-4 right-4 md:left-auto md:right-8 md:w-96 bg-gray-900 text-white p-4 rounded-xl shadow-2xl z-[100] cursor-pointer hover:bg-gray-800 transition-colors border border-gray-700 flex items-center justify-between animate-bounce-subtle">
+        <div class="flex items-center gap-3">
+            <div class="bg-green-500 h-10 w-10 rounded-full flex items-center justify-center text-white animate-pulse">
+                <i data-lucide="bike" class="w-5 h-5"></i>
+            </div>
+            <div>
+                <p class="text-xs text-gray-400 font-bold uppercase tracking-wider">On the way</p>
+                <p class="font-bold text-sm">Arriving in <span id="popup-timer" class="text-green-400">-- mins</span></p>
+            </div>
+        </div>
+        <div class="bg-gray-800 p-2 rounded-lg">
+            <i data-lucide="map" class="w-5 h-5 text-gray-300"></i>
+        </div>
+    </div>
+
+    <!-- Order Success Modal (Updated with Time) -->
+    <div id="order-success-modal" class="fixed inset-0 z-[90] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative z-10 overflow-hidden pop-in text-center p-8">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+                <i data-lucide="check-circle" class="w-10 h-10"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Order Placed!</h2>
+            <p class="text-gray-600 mb-4">Order <span id="success-order-id" class="font-bold text-black">#00000</span> confirmed.</p>
+            
+            <div class="bg-green-50 border border-green-100 p-4 rounded-xl mb-6">
+                <p class="text-sm text-green-800 font-medium">Estimated Delivery</p>
+                <p class="text-2xl font-bold text-green-700 mt-1" id="success-eta">-- mins</p>
+            </div>
+
+            <button onclick="closeOrderSuccess()" class="w-full bg-gray-900 text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition">Track Order</button>
+        </div>
+    </div>
+
+    <!-- UNIFIED LOGIN / SIGNUP / PROFILE MODAL -->
+    <div id="auth-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm" onclick="toggleModal('auth-modal')"></div>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-md relative z-10 overflow-hidden animate-fade-in flex flex-col max-h-[90vh]">
+            
+            <!-- Close Button -->
+            <button onclick="toggleModal('auth-modal')" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-50"><i data-lucide="x"></i></button>
+
+            <!-- AUTH VIEWS CONTAINER -->
+            <div id="auth-container" class="overflow-y-auto">
+                
+                <!-- 1. AUTH TABS (Visible only when not logged in) -->
+                <div id="auth-tabs" class="flex border-b">
+                    <button onclick="switchAuthTab('login')" id="tab-login" class="flex-1 py-4 font-bold text-green-600 border-b-2 border-green-600 bg-green-50">Login</button>
+                    <button onclick="switchAuthTab('signup')" id="tab-signup" class="flex-1 py-4 font-bold text-gray-500 hover:text-green-600">Sign Up</button>
+                </div>
+
+                <!-- 2. LOGIN FORM -->
+                <div id="login-form-view" class="p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Welcome Back!</h3>
+                    <form onsubmit="handleLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Mobile Number / Username</label>
+                            <div class="flex">
+                                <span class="input-group-text p-2 bg-gray-50 border rounded-l border-r-0 text-gray-500"><i data-lucide="user" class="w-4 h-4"></i></span>
+                                <input type="text" id="login-username" required class="w-full border rounded-r-lg p-2.5 border-l-0 focus:border-green-500 outline-none" placeholder="Enter Mobile Number">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                            <div class="flex">
+                                <span class="input-group-text p-2 bg-gray-50 border rounded-l border-r-0 text-gray-500"><i data-lucide="lock" class="w-4 h-4"></i></span>
+                                <input type="password" id="login-password" required class="w-full border rounded-r-lg p-2.5 border-l-0 focus:border-green-500 outline-none" placeholder="••••••••">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 shadow-md mt-2">Login</button>
+                    </form>
+                </div>
+
+                <!-- 3. SIGNUP FORM -->
+                <div id="signup-form-view" class="hidden p-6">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Create Account</h3>
+                    <form onsubmit="handleSignup(event)" class="space-y-3">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Personal Details</label>
+                            <input type="text" id="signup-name" required placeholder="Full Name" class="w-full border rounded-lg p-2.5 mb-2 focus:border-green-500 outline-none">
+                            <input type="tel" id="signup-mobile" required placeholder="Mobile Number (Username)" pattern="[0-9]{10}" maxlength="10" class="w-full border rounded-lg p-2.5 mb-2 focus:border-green-500 outline-none">
+                            <input type="password" id="signup-password" required placeholder="Set Password" class="w-full border rounded-lg p-2.5 focus:border-green-500 outline-none">
+                        </div>
+                        
+                        <div class="border-t pt-3">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Delivery Address</label>
+                            <input type="text" id="signup-address" required placeholder="Flat No, Building, Street" class="w-full border rounded-lg p-2.5 mb-2 focus:border-green-500 outline-none">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="signup-city" required placeholder="City" class="w-full border rounded-lg p-2.5 focus:border-green-500 outline-none">
+                                <input type="text" id="signup-pincode" required placeholder="Pincode" maxlength="6" pattern="[0-9]{6}" class="w-full border rounded-lg p-2.5 focus:border-green-500 outline-none">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 shadow-md mt-2">Sign Up & Save</button>
+                    </form>
+                </div>
+
+                <!-- 4. PROFILE VIEW (Visible when logged in) -->
+                <div id="profile-view" class="hidden p-6">
+                    <div class="text-center mb-6">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 text-green-600">
+                            <i data-lucide="user" class="w-10 h-10"></i>
+                        </div>
+                        <h3 class="text-2xl font-bold text-gray-800" id="profile-display-name">User Name</h3>
+                        <p class="text-gray-500" id="profile-display-mobile">+91 XXXXXXXXXX</p>
+                    </div>
+                    
+                    <!-- View Mode -->
+                    <div id="profile-read-only" class="bg-gray-50 p-4 rounded-lg text-left mb-6 border border-gray-200">
+                        <div class="flex justify-between items-start mb-2">
+                            <p class="text-xs text-gray-500 uppercase font-bold">Delivery Address</p>
+                            <button onclick="toggleProfileEdit(true)" class="text-green-600 text-xs font-bold hover:underline flex items-center gap-1"><i data-lucide="edit-2" class="w-3 h-3"></i> Edit</button>
+                        </div>
+                        <p class="text-sm text-gray-700 leading-relaxed" id="profile-display-address">Address here...</p>
+                    </div>
+
+                    <!-- Edit Mode -->
+                    <div id="profile-edit-mode" class="hidden bg-white border border-green-200 p-4 rounded-lg mb-6 shadow-inner">
+                         <h4 class="font-bold text-sm mb-3 text-green-700">Update Profile</h4>
+                         <form onsubmit="handleProfileUpdate(event)" class="space-y-3">
+                             <input type="text" id="edit-name" placeholder="Full Name" class="w-full border rounded p-2 text-sm">
+                             <input type="text" id="edit-address" placeholder="Address" class="w-full border rounded p-2 text-sm">
+                             <div class="grid grid-cols-2 gap-2">
+                                <input type="text" id="edit-city" placeholder="City" class="w-full border rounded p-2 text-sm">
+                                <input type="text" id="edit-pincode" placeholder="Pincode" class="w-full border rounded p-2 text-sm">
+                             </div>
+                             <div class="flex gap-2 pt-2">
+                                 <button type="button" onclick="toggleProfileEdit(false)" class="flex-1 bg-gray-200 text-gray-700 py-2 rounded text-sm font-bold">Cancel</button>
+                                 <button type="submit" class="flex-1 bg-green-600 text-white py-2 rounded text-sm font-bold">Save Changes</button>
+                             </div>
+                         </form>
+                    </div>
+
+                    <button onclick="logout()" class="w-full bg-red-50 text-red-600 border border-red-200 py-3 rounded-lg font-bold hover:bg-red-100 transition flex items-center justify-center gap-2">
+                        <i data-lucide="log-out" class="w-4 h-4"></i> Logout
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-300 py-12 border-t border-gray-800 mt-auto">
+        <div class="container mx-auto px-4 lg:px-12 grid grid-cols-1 md:grid-cols-3 gap-8 text-sm">
+            <div>
+                <h3 class="text-white font-bold text-lg mb-4 flex items-center gap-2"><i data-lucide="store" class="w-5 h-5 text-green-500"></i> About Apna Kirana</h3>
+                <p class="leading-relaxed mb-4 text-gray-400">Apna Kirana is your trusted neighborhood grocery store, now online. We connect you to local inventory, ensuring the freshest produce and fastest delivery.</p>
+            </div>
+            <div>
+                <h3 class="text-white font-bold text-lg mb-4">Policies</h3>
+                <ul class="space-y-2">
+                    <li><a href="#" class="hover:text-green-400">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-green-400">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h3 class="text-white font-bold text-lg mb-4">Contact</h3>
+                <p>support@apnakirana.com</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Location Modal, Cart Sidebar, Welcome Modal from previous code... -->
+    <!-- (Re-including strictly necessary ones to ensure file completeness) -->
+    
+    <div id="cart-modal" class="fixed inset-0 z-[60] hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm" onclick="toggleModal('cart-modal')"></div>
+        <div class="absolute right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl transform transition-transform duration-300 translate-x-full" id="cart-panel">
+            <div class="flex flex-col h-full">
+                <div class="p-4 border-b flex justify-between items-center bg-gray-50">
+                    <h3 class="font-bold text-lg flex items-center gap-2"><i data-lucide="shopping-bag" class="w-5 h-5 text-green-600"></i> My Basket</h3>
+                    <button onclick="toggleModal('cart-modal')" class="text-gray-500 hover:text-red-500"><i data-lucide="x" class="w-6 h-6"></i></button>
+                </div>
+                <div id="cart-items-container" class="flex-1 overflow-y-auto p-4 space-y-4"></div>
+                <div class="p-4 border-t bg-gray-50">
+                    <div class="flex justify-between mb-4 font-bold text-lg"><span>Total</span><span id="cart-total-display">₹0</span></div>
+                    <button onclick="proceedToCheckout()" class="w-full bg-green-600 text-white py-3 rounded-lg font-bold hover:bg-green-700 transition">Checkout</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="location-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black bg-opacity-60 backdrop-blur-sm" onclick="toggleModal('location-modal')"></div>
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-sm relative z-10 p-6">
+            <div class="flex justify-between items-center mb-4"><h3 class="font-bold text-lg">Select Location</h3><button onclick="toggleModal('location-modal')"><i data-lucide="x" class="w-5 h-5 text-gray-400"></i></button></div>
+            <div class="space-y-2">
+                <button onclick="setLocation('Pune, 411016')" class="w-full text-left p-3 rounded border hover:bg-green-50 hover:border-green-500 transition">Pune, 411016</button>
+                <button onclick="setLocation('Wakad, 411057')" class="w-full text-left p-3 rounded border hover:bg-green-50 hover:border-green-500 transition">Wakad, 411057</button>
+                <button onclick="setLocation('Pimpri-chinchwad, 411044')" class="w-full text-left p-3 rounded border hover:bg-green-50 hover:border-green-500 transition">Pimpri-chinchwad, 411044</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="welcome-modal" class="fixed inset-0 z-[80] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black bg-opacity-70 backdrop-blur-sm"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative z-10 overflow-hidden pop-in text-center p-8">
+            <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4 text-green-600">
+                <i data-lucide="shopping-basket" class="w-10 h-10"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">Welcome to Apna Kirana!</h2>
+            <p class="text-gray-500 mb-8">Get <strong>flat 20% OFF</strong> on your first order.</p>
+            <button onclick="closeWelcomeModal()" class="w-full bg-green-600 text-white py-3.5 rounded-xl font-bold text-lg hover:bg-green-700 transition-colors shadow-lg">Start Shopping</button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        const categories = [
+            { id: 'fv', name: "Fruits & Veggies", image: "image/veg.jpg" },
+            { id: 'fm', name: "Foodgrains",       image: "image/foodgrain.jpg" },
+            { id: 'bd', name: "Bakery & Dairy",   image: "image/bakery.jpg" },
+            { id: 'sn', name: "Snacks",           image: "image/snacks.jpg" },
+            { id: 'bv', name: "Drinks",           image: "image/drink.jpg" },
+            { id: 'df', name: "Dry Fruits",       image: "image/dryfruit.jpg" },
+            { id: 'dn', name: "Daily Need",       image: "image/dailyneed.jpg" },
+            { id: 'ma', name: "Masala",           image: "image/masala.jpg" },
+        ];
+        
+        const products = [
+            { id: 1, name: "Fresh Red Onion", category: "Fruits & Veggies", price: 35, unit: "1 kg", image: "image/onion.jpg", discount: 25 },
+            { id: 2, name: "Farm Potatoes", category: "Fruits & Veggies", price: 40, unit: "1 kg", image: "image/potato.jpg", discount: 10 },
+            { id: 3, name: "Fresh Tomatoes", category: "Fruits & Veggies", price: 25, unit: "1 kg", image: "image/tomato.jpg", discount: 5 },
+            { id: 11, name: "Green Chili", category: "Fruits & Veggies", price: 15, unit: "200 g", image: "image/chilli.jpg", discount: 0 },
+            { id: 4, name: "Sliver Coin Wheat Atta", category: "Foodgrains", price: 450, unit: "10 kg", image: "image/atta.jpg", discount: 15 },
+            { id: 5, name: "Toor Dal", category: "Foodgrains", price: 140, unit: "1 kg", image: "image/tooldal.jpg", discount: 0 },
+            { id: 6, name: "Amul Butter", category: "Bakery & Dairy", price: 56, unit: "100 g", image: "image/butter.jpg", discount: 2 },
+            { id: 7, name: "Amul Milk", category: "Bakery & Dairy", price: 32, unit: "500 ml", image: "image/milk.jpg", discount: 0 },
+            { id: 9, name: "Maggi", category: "Snacks", price: 14, unit: "70 g", image: "image/maggi.jpg", discount: 0 },
+            { id: 10, name: "Mazza", category: "Drinks", price: 650, unit: "1 kg", image: "image/mazza.jpg", discount: 20 },
+            { id: 23, name: "Premium Almonds (Badam)", category: "Dry Fruits", price: 850, unit: "500 g", image: "image/badam.jpg", discount: 10 },
+            { id: 24, name: "Whole Cashews (Kaju)", category: "Dry Fruits", price: 750, unit: "500 g", image: "image/kaju.jpg", discount: 5 },
+            { id: 25, name: "Golden Raisins (Kishmish)", category: "Dry Fruits", price: 250, unit: "250 g", image: "image/kishmis.jpg", discount: 0 },
+            { id: 26, name: "Walnut Kernels (Akhrot)", category: "Dry Fruits", price: 600, unit: "250 g", image: "image/akhrod.jpg", discount: 15 },
+            { id: 27, name: "Roasted Pistachios (Pista)", category: "Dry Fruits", price: 900, unit: "500 g", image: "image/pista.jpg", discount: 20 },
+            { id: 28, name: "Taj Tea", category: "Daily Need", price: 320, unit: "500 g", image: "image/taj.jpg", discount: 0 },
+            { id: 29, name: "Silver Coin Rava", category: "Daily Need", price: 85, unit: "500 g", image: "image/rava.jpg", discount: 0 },
+            { id: 30, name: "Poha", category: "Daily Need", price: 55, unit: "500 g", image: "image/poha.jpg", discount: 0 },
+            { id: 31, name: "Sugar", category: "Daily Need", price: 40, unit: "500 g", image: "image/sugar.jpg", discount: 1 },
+            { id: 32, name: "Tata Salt", category: "Daily Need", price: 20, unit: "500 g", image: "image/tatasalt.jpg", discount: 0 },
+            { id: 33, name: "Lays Chips", category: "Snacks", price: 100, unit: "500 g", image: "image/lays.jpg", discount: 0 },
+            { id: 34, name: "Balaji Chips", category: "Snacks", price: 90, unit: "500 g", image: "image/balaji.jpg", discount: 1 },
+            { id: 35, name: "Bikaji Bhujiya", category: "Snacks", price: 175, unit: "500 g", image: "image/bikaji.jpg", discount: 3 },
+            { id: 36, name: "Chitale Bakarwadi", category: "Snacks", price: 350, unit: "500 g", image: "image/bakarwadi.jpg", discount: 5},
+            { id: 37, name: "Apple", category: "Fruits & Veggies", price: 150, unit: "500 g", image: "image/apple.jpg", discount: 2 },
+            { id: 38, name: "Banana", category: "Fruits & Veggies", price: 50, unit: "1 dozen", image: "image/banana.jpg", discount: 0 },
+            { id: 39, name: "Orange", category: "Fruits & Veggies", price: 120, unit: "1 kg", image: "image/orange.jpg", discount: 1 },
+            { id: 40, name: "Coca Cola", category: "Drinks", price: 40, unit: "100 ml", image: "image/coca.jpg", discount: 0 },
+            { id: 41, name: "Amul Cool", category: "Drinks", price: 25, unit: "60 ml", image: "image/cool.jpg", discount: 0 },
+            { id: 42, name: "Red chilli Powder", category: "Masala", price: 325, unit: "1 kg", image: "image/redchilli.jpg", discount: 5 },
+            { id: 43, name: "Turmeric", category: "Masala", price: 240, unit: "1 kg", image: "image/turmeric.jpg", discount: 0 },
+            { id: 44, name: "Butter Milk", category: "Bakery & Dairy", price: 120, unit: "200 g", image: "image/buttermik.jpg", discount: 0 },
+            { id: 45, name: "Amul Cheese", category: "Bakery & Dairy", price: 70, unit: "100 ml", image: "image/chess.jpg", discount: 0 },
+        ];
+
+        const heroImages = ["background.jpg", "slider1.jpg"];
+        let currentIndex = 0;
+        let sliderInterval;
+        const visibleCards = 4;
+
+        // === USER & AUTH LOGIC ===
+        let cart = [];
+        let isLoggedIn = false;
+        let currentUser = null; 
+        
+        // Active Order State
+        let activeOrder = null;
+        let trackingInterval;
+
+        // Simulated Database in LocalStorage
+        function getUsersDB() {
+            const users = localStorage.getItem('apnaKiranaUsersDB');
+            return users ? JSON.parse(users) : [];
+        }
+
+        function saveUsersDB(users) {
+            localStorage.setItem('apnaKiranaUsersDB', JSON.stringify(users));
+        }
+
+        function init() {
+            lucide.createIcons();
+            initSlider();
+            startHeroSlider();
+            renderBestDeals();
+            renderNavCategories();
+            checkSession(); 
+        }
+
+        // --- ORDER TRACKING LOGIC ---
+        
+        function placeOrder(e) {
+            e.preventDefault();
+            
+            // SECURITY CHECK: Must be logged in
+            if (!currentUser) {
+                alert("Please login to place an order");
+                openAuthModal();
+                return;
+            }
+
+            const orderId = Math.floor(10000 + Math.random() * 90000);
+            
+            // Random ETA between 15 and 45 mins
+            const eta = Math.floor(Math.random() * (45 - 15 + 1) + 15);
+            
+            // Save active order state WITH USER BINDING
+            activeOrder = {
+                id: orderId,
+                totalTime: eta, // total minutes
+                remainingTime: eta * 60, // seconds
+                startTime: Date.now(),
+                userMobile: currentUser.mobile // BIND TO USER
+            };
+            localStorage.setItem('apnaKiranaActiveOrder', JSON.stringify(activeOrder));
+            
+            // Update UI
+            document.getElementById('success-order-id').innerText = "#" + orderId;
+            document.getElementById('success-eta').innerText = eta + " mins";
+            document.getElementById('order-success-modal').classList.remove('hidden');
+            
+            startOrderTracking();
+        }
+
+        function startOrderTracking() {
+            updateTrackingUI();
+            
+            // Clear existing
+            if(trackingInterval) clearInterval(trackingInterval);
+            
+            // Show Popup
+            document.getElementById('active-order-popup').classList.remove('hidden');
+            
+            trackingInterval = setInterval(() => {
+                if(!activeOrder) return;
+                
+                activeOrder.remainingTime--;
+                
+                if(activeOrder.remainingTime <= 0) {
+                    // Order Delivered
+                    activeOrder.remainingTime = 0;
+                    document.getElementById('popup-timer').innerText = "Arrived!";
+                    clearInterval(trackingInterval);
+                    // Could add logic to remove order after some time
+                } else {
+                    updateTrackingUI();
+                    localStorage.setItem('apnaKiranaActiveOrder', JSON.stringify(activeOrder));
+                }
+            }, 1000); // Update every second
+        }
+        
+        function updateTrackingUI() {
+            if(!activeOrder) return;
+            const mins = Math.floor(activeOrder.remainingTime / 60);
+            const secs = activeOrder.remainingTime % 60;
+            const timeString = `${mins}m ${secs}s`;
+            
+            // Update Popup
+            const timerEl = document.getElementById('popup-timer');
+            if(timerEl) timerEl.innerText = timeString;
+            
+            // Update Tracking Page
+            const trackingTimeBig = document.getElementById('tracking-time-big');
+            if(trackingTimeBig) trackingTimeBig.innerText = timeString;
+            
+            const trackId = document.getElementById('tracking-order-id');
+            if(trackId) trackId.innerText = "#" + activeOrder.id;
+            
+            const placedTime = new Date(activeOrder.startTime);
+            const timePlacedEl = document.getElementById('time-placed');
+            if(timePlacedEl) timePlacedEl.innerText = placedTime.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
+        
+        function openTracking() {
+            // Hide all other views
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('category-view').classList.add('hidden');
+            document.getElementById('checkout-view').classList.add('hidden');
+            document.getElementById('order-success-modal').classList.add('hidden');
+            
+            // Show Tracking View
+            document.getElementById('tracking-view').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function closeOrderSuccess() {
+            document.getElementById('order-success-modal').classList.add('hidden');
+            cart = [];
+            refreshUI(); // Clears cart
+            openTracking(); // Go directly to tracking
+        }
+        
+        function stopTracking() {
+            if(trackingInterval) clearInterval(trackingInterval);
+            activeOrder = null;
+            document.getElementById('active-order-popup').classList.add('hidden');
+            // If on tracking view, go home
+            if(!document.getElementById('tracking-view').classList.contains('hidden')) {
+                renderHome();
+            }
+        }
+        
+        function checkActiveOrder() {
+            const savedOrder = localStorage.getItem('apnaKiranaActiveOrder');
+            if(savedOrder) {
+                const parsedOrder = JSON.parse(savedOrder);
+                // Only restore if it belongs to current user
+                if (currentUser && parsedOrder.userMobile === currentUser.mobile) {
+                    activeOrder = parsedOrder;
+                    startOrderTracking();
+                } else {
+                    stopTracking();
+                }
+            } else {
+                stopTracking();
+            }
+        }
+
+        // --- SESSION MANAGEMENT (Existing) ---
+        function checkSession() {
+            const session = localStorage.getItem('apnaKiranaSession');
+            if(session) {
+                try {
+                    currentUser = JSON.parse(session);
+                    isLoggedIn = true;
+                    updateUIForLogin();
+                    fillCheckoutForm();
+                    // CHECK FOR ORDER HERE
+                    checkActiveOrder();
+                } catch(e) {
+                    console.error("Session error", e);
+                    logout();
+                }
+            }
+        }
+
+        function updateUIForLogin() {
+            if(isLoggedIn && currentUser) {
+                document.getElementById('user-name').innerText = currentUser.name.split(' ')[0];
+                document.getElementById('profile-display-name').innerText = currentUser.name;
+                document.getElementById('profile-display-mobile').innerText = '+91 ' + currentUser.mobile;
+                document.getElementById('profile-display-address').innerText = `${currentUser.address}, ${currentUser.city} - ${currentUser.pincode}`;
+            } else {
+                document.getElementById('user-name').innerText = "Login / Sign Up";
+            }
+        }
+
+        function fillCheckoutForm() {
+             if(!currentUser) return;
+             document.getElementById('checkout-name').value = currentUser.name || '';
+             document.getElementById('checkout-mobile').value = currentUser.mobile || '';
+             document.getElementById('checkout-address').value = currentUser.address || '';
+             document.getElementById('checkout-city').value = currentUser.city || '';
+             document.getElementById('checkout-pincode').value = currentUser.pincode || '';
+        }
+
+        // --- AUTH MODAL LOGIC (Existing) ---
+        function openAuthModal() {
+            if(isLoggedIn) {
+                // Show Profile
+                document.getElementById('auth-tabs').classList.add('hidden');
+                document.getElementById('login-form-view').classList.add('hidden');
+                document.getElementById('signup-form-view').classList.add('hidden');
+                document.getElementById('profile-view').classList.remove('hidden');
+                toggleProfileEdit(false); // Reset edit mode
+            } else {
+                // Show Login/Signup Tabs
+                document.getElementById('auth-tabs').classList.remove('hidden');
+                document.getElementById('profile-view').classList.add('hidden');
+                switchAuthTab('login'); // Default to login
+            }
+            toggleModal('auth-modal');
+        }
+
+        function switchAuthTab(tab) {
+            const loginBtn = document.getElementById('tab-login');
+            const signupBtn = document.getElementById('tab-signup');
+            const loginForm = document.getElementById('login-form-view');
+            const signupForm = document.getElementById('signup-form-view');
+
+            if(tab === 'login') {
+                loginBtn.classList.add('text-green-600', 'border-b-2', 'border-green-600', 'bg-green-50');
+                loginBtn.classList.remove('text-gray-500');
+                signupBtn.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'bg-green-50');
+                signupBtn.classList.add('text-gray-500');
+                
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupBtn.classList.add('text-green-600', 'border-b-2', 'border-green-600', 'bg-green-50');
+                signupBtn.classList.remove('text-gray-500');
+                loginBtn.classList.remove('text-green-600', 'border-b-2', 'border-green-600', 'bg-green-50');
+                loginBtn.classList.add('text-gray-500');
+                
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signup-name').value;
+            const mobile = document.getElementById('signup-mobile').value;
+            const password = document.getElementById('signup-password').value;
+            const address = document.getElementById('signup-address').value;
+            const city = document.getElementById('signup-city').value;
+            const pincode = document.getElementById('signup-pincode').value;
+
+            if(!name || !mobile || !password || !address) {
+                alert("Please fill all details");
+                return;
+            }
+
+            const users = getUsersDB();
+            if(users.find(u => u.mobile === mobile)) {
+                alert("User already exists with this mobile number. Please Login.");
+                switchAuthTab('login');
+                return;
+            }
+
+            const newUser = { name, mobile, password, address, city, pincode };
+            users.push(newUser);
+            saveUsersDB(users);
+            
+            // Auto Login
+            currentUser = newUser;
+            isLoggedIn = true;
+            localStorage.setItem('apnaKiranaSession', JSON.stringify(currentUser));
+            
+            updateUIForLogin();
+            fillCheckoutForm();
+            checkActiveOrder(); // Check for any existing orders
+            toggleModal('auth-modal');
+            alert("Account created successfully!");
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const mobile = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            const users = getUsersDB();
+            const user = users.find(u => u.mobile === mobile && u.password === password);
+
+            if(user) {
+                currentUser = user;
+                isLoggedIn = true;
+                localStorage.setItem('apnaKiranaSession', JSON.stringify(currentUser));
+                
+                updateUIForLogin();
+                fillCheckoutForm();
+                checkActiveOrder(); // Check for any existing orders
+                toggleModal('auth-modal');
+            } else {
+                alert("Invalid Credentials. Please try again or Sign Up.");
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('apnaKiranaSession');
+            isLoggedIn = false;
+            currentUser = null;
+            updateUIForLogin();
+            
+            // Stop tracking and hide popup
+            stopTracking();
+
+            // Clear checkout form
+            document.getElementById('checkout-name').value = '';
+            document.getElementById('checkout-mobile').value = '';
+            document.getElementById('checkout-address').value = '';
+            document.getElementById('checkout-city').value = '';
+            document.getElementById('checkout-pincode').value = '';
+            
+            toggleModal('auth-modal');
+        }
+
+        // --- PROFILE EDIT LOGIC (Existing) ---
+        function toggleProfileEdit(enable) {
+            const readOnlyView = document.getElementById('profile-read-only');
+            const editView = document.getElementById('profile-edit-mode');
+            
+            if(enable) {
+                readOnlyView.classList.add('hidden');
+                editView.classList.remove('hidden');
+                // Pre-fill edit form
+                document.getElementById('edit-name').value = currentUser.name;
+                document.getElementById('edit-address').value = currentUser.address;
+                document.getElementById('edit-city').value = currentUser.city;
+                document.getElementById('edit-pincode').value = currentUser.pincode;
+            } else {
+                readOnlyView.classList.remove('hidden');
+                editView.classList.add('hidden');
+            }
+        }
+
+        function handleProfileUpdate(e) {
+            e.preventDefault();
+            const newName = document.getElementById('edit-name').value;
+            const newAddress = document.getElementById('edit-address').value;
+            const newCity = document.getElementById('edit-city').value;
+            const newPincode = document.getElementById('edit-pincode').value;
+
+            // Update Current User
+            currentUser.name = newName;
+            currentUser.address = newAddress;
+            currentUser.city = newCity;
+            currentUser.pincode = newPincode;
+            
+            // Update Session
+            localStorage.setItem('apnaKiranaSession', JSON.stringify(currentUser));
+            
+            // Update Database
+            const users = getUsersDB();
+            const index = users.findIndex(u => u.mobile === currentUser.mobile);
+            if(index !== -1) {
+                users[index] = currentUser;
+                saveUsersDB(users);
+            }
+
+            // Update UI
+            updateUIForLogin();
+            fillCheckoutForm();
+            toggleProfileEdit(false);
+            alert("Profile Updated Successfully");
+        }
+
+
+        // --- SLIDER & UI HELPERS (Same as before) ---
+        function initSlider() {
+            const track = document.getElementById('category-track');
+            track.innerHTML = '';
+            categories.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = 'flex-none w-1/4 px-2 flex flex-col items-center cursor-pointer group transition-transform hover:scale-105';
+                card.onclick = () => showCategoryPage(cat.name);
+                card.innerHTML = `
+                    <div class="w-20 h-20 md:w-28 md:h-28 rounded-full overflow-hidden border-4 border-green-100 shadow-md category-card-shadow mb-2 bg-white">
+                        <img src="${cat.image}" onerror="this.src='https://images.unsplash.com/photo-1542838132-92c53300491e?w=200&h=200&fit=crop'" alt="${cat.name}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <span class="font-medium text-gray-700 group-hover:text-green-700 text-center text-xs md:text-base">${cat.name}</span>
+                `;
+                track.appendChild(card);
+            });
+            startAutoSlide();
+            const container = document.querySelector('#hero-slider').nextElementSibling;
+            container.addEventListener('mouseenter', stopAutoSlide);
+            container.addEventListener('mouseleave', startAutoSlide);
+        }
+
+        function moveSlider(direction) {
+            const track = document.getElementById('category-track');
+            const totalItems = categories.length;
+            const itemWidth = 100 / visibleCards; 
+            currentIndex += direction;
+            if (currentIndex > totalItems - visibleCards) currentIndex = 0;
+            else if (currentIndex < 0) currentIndex = totalItems - visibleCards;
+            const translateX = -(currentIndex * itemWidth);
+            track.style.transform = `translateX(${translateX}%)`;
+        }
+
+        function startAutoSlide() {
+            stopAutoSlide(); 
+            sliderInterval = setInterval(() => moveSlider(1), 3000); 
+        }
+
+        function stopAutoSlide() { clearInterval(sliderInterval); }
+
+        function startHeroSlider() {
+            const heroSection = document.getElementById('hero-slider');
+            if (!heroSection) return;
+            heroSection.style.backgroundImage = `url('${heroImages[0]}')`;
+            setInterval(() => {
+                currentHeroImage = (currentHeroImage + 1) % heroImages.length;
+                heroSection.style.backgroundImage = `url('${heroImages[currentHeroImage]}')`;
+            }, 5000);
+        }
+
+        function renderBestDeals() {
+            const grid = document.getElementById('deals-grid');
+            const deals = products.filter(p => p.discount >= 10).sort((a,b) => b.discount - a.discount);
+            grid.innerHTML = deals.map(item => createProductCard(item)).join('');
+            lucide.createIcons();
+        }
+        
+        function renderNavCategories() {
+            const list = document.getElementById('nav-categories');
+            list.innerHTML = categories.map(cat => `<li class="cursor-pointer whitespace-nowrap hover:text-green-600 transition" onclick="showCategoryPage('${cat.name}')">${cat.name}</li>`).join('');
+        }
+
+        function createProductCard(product) {
+            const originalPrice = Math.round(product.price * (100 / (100 - product.discount)));
+            const inCart = cart.find(c => c.id === product.id);
+            const qty = inCart ? inCart.qty : 0;
+            return `
+            <div class="product-card bg-white rounded-lg border border-gray-200 p-3 flex flex-col h-full relative group hover:shadow-lg transition-shadow">
+                ${product.discount > 0 ? `<span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded z-10 shadow-sm">${product.discount}% OFF</span>` : ''}
+                <div class="relative w-full aspect-[4/3] mb-2 overflow-hidden rounded-md bg-white flex items-center justify-center">
+                    <img src="${product.image}" onerror="this.src='https://images.unsplash.com/photo-1589123053646-4e0c8b4172a6?w=200&h=200&fit=crop'" alt="${product.name}" class="w-full h-full object-contain p-1 transition-transform duration-300 group-hover:scale-105">
+                </div>
+                <div class="text-[10px] text-gray-500 mb-0.5 uppercase tracking-wide">${product.category}</div>
+                <h3 class="font-semibold text-gray-800 text-xs md:text-sm mb-1 line-clamp-2 h-8 md:h-10">${product.name}</h3>
+                <div class="text-[10px] md:text-xs text-gray-500 mb-2 bg-gray-50 inline-block px-1.5 py-0.5 rounded border border-gray-100 w-fit">${product.unit}</div>
+                <div class="mt-auto flex items-center justify-between">
+                    <div><span class="text-sm md:text-base font-bold text-gray-900">₹${product.price}</span>${product.discount > 0 ? `<span class="text-[10px] md:text-xs text-gray-400 line-through ml-1">₹${originalPrice}</span>` : ''}</div>
+                    ${qty > 0 ? `<div class="flex items-center bg-green-600 rounded text-white shadow-md"><button onclick="updateQty(${product.id}, -1)" class="px-1.5 py-1 hover:bg-green-700 transition">-</button><span class="px-1.5 text-xs font-bold min-w-[16px] text-center">${qty}</span><button onclick="updateQty(${product.id}, 1)" class="px-1.5 py-1 hover:bg-green-700 transition">+</button></div>` : `<button onclick="addToCart(${product.id})" class="border border-green-600 text-green-600 hover:bg-green-600 hover:text-white px-3 py-1 rounded text-xs md:text-sm font-bold transition">Add</button>`}
+                </div>
+            </div>`;
+        }
+
+        function showCategoryPage(categoryName) {
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('checkout-view').classList.add('hidden');
+            document.getElementById('category-view').classList.remove('hidden');
+            document.getElementById('tracking-view').classList.add('hidden'); // Added line
+            document.getElementById('category-page-title').innerText = categoryName;
+            const filteredProducts = products.filter(p => p.category === categoryName || (categoryName.includes(p.category))); 
+            const grid = document.getElementById('category-page-grid');
+            if (filteredProducts.length > 0) {
+                 grid.innerHTML = filteredProducts.map(product => createProductCard(product)).join('');
+                 document.getElementById('category-item-count').innerText = `${filteredProducts.length} items`;
+            } else {
+                 grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">No products found for this category.</div>`;
+                 document.getElementById('category-item-count').innerText = `0 items`;
+            }
+            window.scrollTo(0,0);
+        }
+
+        function renderHome() {
+            document.getElementById('home-view').classList.remove('hidden');
+            document.getElementById('category-view').classList.add('hidden');
+            document.getElementById('checkout-view').classList.add('hidden');
+            document.getElementById('tracking-view').classList.add('hidden'); // Added line
+            window.scrollTo(0,0);
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            if(product) { cart.push({ ...product, qty: 1 }); refreshUI(); }
+        }
+
+        function updateQty(id, delta) {
+            const itemIndex = cart.findIndex(c => c.id === id);
+            if (itemIndex > -1) {
+                cart[itemIndex].qty += delta;
+                if (cart[itemIndex].qty <= 0) cart.splice(itemIndex, 1);
+            }
+            refreshUI();
+        }
+
+        function refreshUI() {
+            updateCartUI();
+            if (!document.getElementById('home-view').classList.contains('hidden')) renderBestDeals();
+            if (!document.getElementById('category-view').classList.contains('hidden')) {
+                const currentTitle = document.getElementById('category-page-title').innerText;
+                showCategoryPage(currentTitle);
+            }
+        }
+
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.qty, 0);
+            const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            document.getElementById('cart-count').innerText = count;
+            document.getElementById('cart-total-display').innerText = '₹' + total;
+            document.getElementById('checkout-subtotal').innerText = '₹' + total;
+            document.getElementById('checkout-total').innerText = '₹' + total;
+            const container = document.getElementById('cart-items-container');
+            const checkoutItems = document.getElementById('checkout-items');
+            if(cart.length === 0) {
+                container.innerHTML = `<div class="text-center text-gray-500 mt-10">Basket is empty</div>`;
+                checkoutItems.innerHTML = `<div class="text-center text-gray-500 text-sm">Basket is empty</div>`;
+            } else {
+                const cartHTML = cart.map(item => `
+                    <div class="flex gap-3 mb-4 items-center">
+                        <img src="${item.image}" onerror="this.src='https://images.unsplash.com/photo-1589123053646-4e0c8b4172a6?w=200&h=200&fit=crop'" class="w-16 h-16 object-cover rounded">
+                        <div class="flex-1"><p class="font-medium text-sm line-clamp-1">${item.name}</p><p class="font-bold text-sm">₹${item.price} x ${item.qty}</p></div>
+                        <div class="flex items-center border rounded bg-gray-50"><button onclick="updateQty(${item.id}, -1)" class="px-2 py-1 hover:bg-gray-200">-</button><span class="text-xs font-bold px-1">${item.qty}</span><button onclick="updateQty(${item.id}, 1)" class="px-2 py-1 hover:bg-gray-200">+</button></div>
+                    </div>`).join('');
+                container.innerHTML = cartHTML;
+                checkoutItems.innerHTML = cart.map(item => `<div class="flex justify-between text-gray-600 mb-2 text-xs"><span class="truncate w-2/3">${item.name} x${item.qty}</span><span>₹${item.price * item.qty}</span></div>`).join('');
+            }
+        }
+
+        function toggleModal(modalId) {
+            const modal = document.getElementById(modalId);
+            const panel = document.getElementById('cart-panel');
+            if (modalId === 'cart-modal') {
+                if(modal.classList.contains('hidden')) {
+                    modal.classList.remove('hidden');
+                    setTimeout(() => panel.classList.remove('translate-x-full'), 10);
+                } else {
+                    panel.classList.add('translate-x-full');
+                    setTimeout(() => modal.classList.add('hidden'), 300);
+                }
+            } else {
+                modal.classList.toggle('hidden');
+            }
+        }
+
+        function showCart() { toggleModal('cart-modal'); }
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({behavior: 'smooth'}); }
+        function setLocation(loc) { document.getElementById('current-location').innerText = loc; toggleModal('location-modal'); }
+        function proceedToCheckout() {
+            if(cart.length === 0) { alert("Basket is empty!"); return; }
+            if(!isLoggedIn) { openAuthModal(); return; }
+            toggleModal('cart-modal');
+            document.getElementById('home-view').classList.add('hidden');
+            document.getElementById('category-view').classList.add('hidden');
+            document.getElementById('tracking-view').classList.add('hidden'); // Added line
+            document.getElementById('checkout-view').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+        function togglePaymentDetails() {
+            const upiRadio = document.querySelector('input[value="upi"]');
+            const upiInput = document.getElementById('upi-input-container');
+            if(upiRadio.checked) upiInput.classList.remove('hidden'); else upiInput.classList.add('hidden');
+        }
+        
+        // Changed placeOrder logic above to handle ETA
+        
+        function closeWelcomeModal() { document.getElementById('welcome-modal').classList.add('hidden'); }
+        
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            if (term.length > 0) {
+                document.getElementById('home-view').classList.add('hidden');
+                document.getElementById('category-view').classList.remove('hidden');
+                document.getElementById('tracking-view').classList.add('hidden');
+                document.getElementById('category-page-title').innerText = `Search: "${e.target.value}"`;
+                const filtered = products.filter(p => p.name.toLowerCase().includes(term));
+                document.getElementById('category-item-count').innerText = `${filtered.length} items`;
+                const grid = document.getElementById('category-page-grid');
+                if (filtered.length > 0) {
+                    grid.innerHTML = filtered.map(product => createProductCard(product)).join('');
+                } else {
+                    grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-500">No products found matching "${e.target.value}"</div>`;
+                }
+            } else {
+                renderHome();
+            }
+        });
+
+        window.onload = init;
+    </script>
+</body>
+</html>
